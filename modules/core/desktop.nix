@@ -324,7 +324,6 @@ in
           "$mainMod SHIFT, I, layoutmsg, togglesplit"
           "$mainMod, F, fullscreen, 0"
           "$mainMod, T, togglefloating"
-          "$mainMod SHIFT, C, exit"
           # ============= LAYOUTS =============
           "$mainMod ALT, L, exec, hyprland-change-layout toggle"
           "$mainMod ALT, 1, exec, hyprland-change-layout dwindle"
@@ -384,7 +383,8 @@ in
           "$mainMod, mouse_up, workspace, e-1"
           # ============= CLIPPBOARD & SYSTEM =============
           "$mainMod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
-          "$mainMod CONTROL, Q, exec, wlogout"
+          "$mainMod CONTROL, Q, exit"
+          "$mainMod SHIFT, Q, exec, wlogout"
           "$mainMod SHIFT, W, exec, waypaper --random"
           "$mainMod CONTROL, R, exec, hyprctl reload"
           # ============= SCREENSHOTS =============
