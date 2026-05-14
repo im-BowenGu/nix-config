@@ -18,18 +18,8 @@
 
   stylixImage = ../wallpapers/wallpaper.png;
 
-  stylixCursor = {
-    package = pkgs.nordzy-cursor-theme;
-    name = "Nordzy-cursors";
-    size = 24;
-  };
-
   enableNFS = false;
   printEnable = false;
 
   thunarEnable = true;
-
-  barToggle = true;
-  waybarChoice = ../modules/home/waybar/waybar-mangowc-jak-catppuccin.nix;
-  animChoice = ../modules/home/hyprland/animations-ml4w-classic.nix;
 }
