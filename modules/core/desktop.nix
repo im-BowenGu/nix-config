@@ -43,7 +43,7 @@ in
 
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
-  home-manager.users.my = {
+  home-manager.users.secret-star = {
     home.stateVersion = "25.11";
     imports = [
       inputs.home-manager.nixosModules.home-manager
@@ -74,6 +74,14 @@ in
     fuzzel
     kdePackages.qtstyleplugin-kvantum
     kdePackages.breeze-icons
+    ydotool
+    hyprshot
+    hyprpicker
+    hypridle
+    swaylock
+    wlogout
+    brightnessctl
+    playerctl
     (python3.withPackages (ps: with ps; [ pip pygobject3 screeninfo ]))
     inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww
   ];
@@ -106,7 +114,12 @@ in
 
     wayland.windowManager.hyprland = {
       enable = true;
-      systemd.enable = true;
+      systemd = {
+        enable = true;
+        enableXdgAutostart = true;
+        variables = [ "--all" ];
+      };
+
       settings = {
         "$mainMod" = "SUPER";
         "$terminal" = "kitty";
@@ -116,37 +129,58 @@ in
         monitor = vars.extraMonitorSettings;
 
         env = [
-          "XDG_CURRENT_DESKTOP,Hyprland"
-          "XDG_SESSION_TYPE,wayland"
-          "XDG_SESSION_DESKTOP,Hyprland"
+          "NIXOS_OZONE_WL, 1"
+          "XDG_CURRENT_DESKTOP, Hyprland"
+          "XDG_SESSION_TYPE, wayland"
+          "XDG_SESSION_DESKTOP, Hyprland"
+          "GDK_BACKEND, wayland, x11"
+          "CLUTTER_BACKEND, wayland"
+          "QT_QPA_PLATFORM,wayland;xcb"
+          "QT_WAYLAND_DISABLE_WINDOWDECORATION, 1"
+          "QT_AUTO_SCREEN_SCALE_FACTOR, 1"
+          "MOZ_ENABLE_WAYLAND, 1"
+          "ELECTRON_OZONE_PLATFORM_HINT,wayland"
+          "GDK_SCALE,1"
+          "QT_SCALE_FACTOR,1"
+          "EDITOR,nvim"
+          "TERMINAL,kitty"
           "XCURSOR_SIZE,24"
           "HYPRCURSOR_SIZE,24"
-          "QT_QPA_PLATFORM,wayland;xcb"
-          "QT_QPA_PLATFORMTHEME,kde"
-          "MOZ_ENABLE_WAYLAND,1"
-          "XMODIFIERS,@im=fcitx"
-          "QT_IM_MODULE,fcitx"
-          "GTK_IM_MODULE,fcitx"
+          "XDG_MENU_PREFIX,plasma-"
         ];
 
         exec-once = [
-          "${pkgs.hyprpolkitagent}/libexec/hyprpolkitagent"
-          "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
-          "fcitx5 -d"
-          "wl-paste --watch cliphist store"
+          "killall -q waybar"
+          "pkill waybar"
+          "killall -q swaync"
+          "pkill swaync"
+          "noctalia-shell &"
+          "wl-paste --type text --watch cliphist store"
+          "wl-paste --type image --watch cliphist store"
+          "dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+          "systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP"
+          "systemctl --user start hyprpolkitagent"
           "hyprctl setcursor Nordzy-cursors 24"
           "awww-daemon &"
+          "sleep 1 && awww img ~/.config/hypr/wallpaper.png &"
         ];
 
         input = {
           kb_layout = "us";
+          kb_options = [
+            "grp:alt_caps_toggle"
+            "caps:super"
+          ];
           numlock_by_default = true;
+          repeat_delay = 300;
           follow_mouse = 1;
+          float_switch_override_focus = 0;
           sensitivity = 0;
           touchpad = {
             natural_scroll = true;
-            "tap-to-click" = true;
             disable_while_typing = true;
+            scroll_factor = 0.8;
+            tap-to-click = true;
             clickfinger_behavior = true;
           };
         };
@@ -158,22 +192,61 @@ in
 
         general = {
           layout = "dwindle";
-          gaps_in = 4;
-          gaps_out = 5;
+          gaps_in = 6;
+          gaps_out = 8;
           gaps_workspaces = 50;
-          border_size = 4;
+          border_size = 2;
           resize_on_border = true;
           allow_tearing = true;
+          "col.active_border" = "rgba(bf00ffee) rgba(d56ab1ee) 45deg";
+          "col.inactive_border" = "rgba(53433fff)";
+        };
+
+        misc = {
+          layers_hog_keyboard_focus = true;
+          initial_workspace_tracking = 0;
+          mouse_move_enables_dpms = true;
+          key_press_enables_dpms = true;
+          disable_hyprland_logo = true;
+          disable_splash_rendering = true;
+          enable_swallow = false;
+          vrr = 2;
+          enable_anr_dialog = true;
+          anr_missed_pings = 15;
+        };
+
+        dwindle = {
+          pseudotile = false;
+          preserve_split = true;
+          smart_resizing = true;
+          use_active_for_splits = true;
+          smart_split = false;
+          default_split_ratio = 1.0;
+          split_bias = 0;
+          precise_mouse_move = false;
+          special_scale_factor = 0.8;
         };
 
         decoration = {
-          rounding = 18;
+          rounding = 10;
           active_opacity = 1.0;
           inactive_opacity = 0.9;
           dim_inactive = true;
           dim_strength = 0.3;
-          blur = { enabled = true; size = 10; passes = 3; xray = true; };
-          shadow = { enabled = true; range = 32; };
+          blur = {
+            enabled = true;
+            size = 5;
+            passes = 3;
+            ignore_opacity = false;
+            new_optimizations = true;
+            xray = true;
+          };
+          shadow = {
+            enabled = true;
+            range = 4;
+            render_power = 3;
+            color = "rgba(1a1a1aee)";
+          };
         };
 
         animations = {
@@ -188,6 +261,41 @@ in
           ];
         };
 
+        gestures = {
+          gesture = [ "3, horizontal, workspace" ];
+          workspace_swipe_distance = 500;
+          workspace_swipe_invert = true;
+          workspace_swipe_min_speed_to_force = 30;
+          workspace_swipe_cancel_ratio = 0.5;
+          workspace_swipe_create_new = true;
+          workspace_swipe_forever = true;
+        };
+
+        cursor = {
+          sync_gsettings_theme = true;
+          no_hardware_cursors = 2;
+          enable_hyprcursor = false;
+          warp_on_change_workspace = 2;
+          no_warps = true;
+        };
+
+        render = {
+          direct_scanout = 0;
+        };
+
+        master = {
+          new_status = "slave";
+          new_on_top = false;
+          new_on_active = "none";
+          orientation = "left";
+          mfact = 0.55;
+          slave_count_for_center_master = 2;
+          center_master_fallback = "left";
+          smart_resizing = true;
+          drop_at_cursor = true;
+          always_keep_position = false;
+        };
+
         windowrule = [
           "float on, match:class ^pavucontrol$"
           "float on, match:class ^blueman-manager$"
@@ -195,25 +303,60 @@ in
           "float on, match:class ^qalculate-gtk$"
           "float on, match:title ^Open File.*$"
           "immediate on, match:class ^steam_app.*$"
+          "float, match:class ^floating$"
+          "size 600 400, match:class ^floating$"
+          "center, match:title ^Open File.*$"
         ];
 
         bind = [
-          "$mainMod, RETURN, exec, kitty"
+          # ============= LAUNCHER =============
+          "$mainMod, D, exec, fuzzel"
+          "$mainMod SHIFT, Return, exec, fuzzel"
+          # ============= TERMINALS =============
+          "$mainMod, Return, exec, kitty"
+          "$mainMod SHIFT, T, exec, kitty --class dropdown"
+          # ============= APPLICATION LAUNCHERS =============
           "$mainMod, B, exec, $browser"
           "$mainMod, E, exec, $fileManager"
-          "$mainMod CONTROL, RETURN, exec, fuzzel"
+          "$mainMod, O, exec, obs"
+          # ============= WINDOW MANAGEMENT =============
           "$mainMod, Q, killactive"
+          "$mainMod, P, pseudo"
+          "$mainMod SHIFT, I, layoutmsg, togglesplit"
           "$mainMod, F, fullscreen, 0"
-          "$mainMod, T, togglefloating"
-          "$mainMod, J, togglesplit"
+          "$mainMod SHIFT, F, togglefloating"
+          "$mainMod SHIFT, C, exit"
+          # ============= LAYOUTS =============
+          "$mainMod ALT, L, exec, hyprland-change-layout toggle"
+          "$mainMod ALT, 1, exec, hyprland-change-layout dwindle"
+          "$mainMod ALT, 2, exec, hyprland-change-layout master"
+          "$mainMod ALT, 3, exec, hyprland-change-layout monocle"
+          # ============= WINDOW MOVEMENT (ARROW KEYS) =============
+          "$mainMod SHIFT, left, movewindow, l"
+          "$mainMod SHIFT, right, movewindow, r"
+          "$mainMod SHIFT, up, movewindow, u"
+          "$mainMod SHIFT, down, movewindow, d"
+          # ============= WINDOW MOVEMENT (VI STYLE) =============
+          "$mainMod SHIFT, h, movewindow, l"
+          "$mainMod SHIFT, l, movewindow, r"
+          "$mainMod SHIFT, k, movewindow, u"
+          "$mainMod SHIFT, j, movewindow, d"
+          # ============= WINDOW SWAPPING (ARROW KEYS) =============
+          "$mainMod ALT, left, swapwindow, l"
+          "$mainMod ALT, right, swapwindow, r"
+          "$mainMod ALT, up, swapwindow, u"
+          "$mainMod ALT, down, swapwindow, d"
+          # ============= FOCUS MOVEMENT (ARROW KEYS) =============
           "$mainMod, left, movefocus, l"
           "$mainMod, right, movefocus, r"
           "$mainMod, up, movefocus, u"
           "$mainMod, down, movefocus, d"
-          "$mainMod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
-          "$mainMod CONTROL, Q, exec, wlogout"
-          "$mainMod SHIFT, W, exec, waypaper --random"
-          "$mainMod CONTROL, R, exec, hyprctl reload"
+          # ============= FOCUS MOVEMENT (VI STYLE) =============
+          "$mainMod, h, movefocus, l"
+          "$mainMod, l, movefocus, r"
+          "$mainMod, k, movefocus, u"
+          "$mainMod, j, movefocus, d"
+          # ============= WORKSPACE SWITCHING (1-10) =============
           "$mainMod, 1, workspace, 1"
           "$mainMod, 2, workspace, 2"
           "$mainMod, 3, workspace, 3"
@@ -223,6 +366,9 @@ in
           "$mainMod, 7, workspace, 7"
           "$mainMod, 8, workspace, 8"
           "$mainMod, 9, workspace, 9"
+          # ============= MOVE WINDOW TO WORKSPACE =============
+          "$mainMod SHIFT, SPACE, movetoworkspace, special"
+          "$mainMod, SPACE, togglespecialworkspace"
           "$mainMod SHIFT, 1, movetoworkspace, 1"
           "$mainMod SHIFT, 2, movetoworkspace, 2"
           "$mainMod SHIFT, 3, movetoworkspace, 3"
@@ -232,12 +378,34 @@ in
           "$mainMod SHIFT, 7, movetoworkspace, 7"
           "$mainMod SHIFT, 8, movetoworkspace, 8"
           "$mainMod SHIFT, 9, movetoworkspace, 9"
+          # ============= WORKSPACE NAVIGATION =============
+          "$mainMod CONTROL, right, workspace, e+1"
+          "$mainMod CONTROL, left, workspace, e-1"
+          "$mainMod, mouse_down, workspace, e+1"
+          "$mainMod, mouse_up, workspace, e-1"
+          # ============= CLIPPBOARD & SYSTEM =============
+          "$mainMod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+          "$mainMod CONTROL, Q, exec, wlogout"
+          "$mainMod SHIFT, W, exec, waypaper --random"
+          "$mainMod CONTROL, R, exec, hyprctl reload"
+          # ============= SCREENSHOTS =============
           "SUPER SHIFT, P, exec, XDG_CURRENT_DESKTOP=sway flameshot gui"
+          "$mainMod CONTROL, S, exec, hyprshot -m output -o $HOME/Pictures/ScreenShots"
+          "$mainMod SHIFT, S, exec, hyprshot -m window -o $HOME/Pictures/ScreenShots"
+          "$mainMod ALT, S, exec, hyprshot -m region -o $HOME/Pictures/ScreenShots"
         ];
 
         bindle = [
-          ", XF86AudioRaiseVolume, exec, wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"
-          ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+          # ============= MEDIA & HARDWARE CONTROLS =============
+          ",XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+          ",XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+          ",XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+          ",XF86AudioPlay, exec, playerctl play-pause"
+          ",XF86AudioPause, exec, playerctl play-pause"
+          ",XF86AudioNext, exec, playerctl next"
+          ",XF86AudioPrev, exec, playerctl previous"
+          ",XF86MonBrightnessDown, exec, brightnessctl set 5%-"
+          ",XF86MonBrightnessUp, exec, brightnessctl set +5%"
         ];
 
         bindm = [
@@ -247,13 +415,8 @@ in
       };
 
       extraConfig = ''
-        gesture = 3, horizontal, workspace
-        gestures {
-          workspace_swipe_distance = 700
-          workspace_swipe_cancel_ratio = 0.2
-          workspace_swipe_min_speed_to_force = 5
-          workspace_swipe_direction_lock = true
-          workspace_swipe_create_new = true
+        xwayland {
+          force_zero_scaling = true
         }
       '';
     };

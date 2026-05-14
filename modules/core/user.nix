@@ -1,7 +1,7 @@
 {
-  users.users.my = {
+  users.users.secret-star = {
     isNormalUser = true;
-    description = "My";
+    description = "secret-star";
     extraGroups = [
       "networkmanager"
       "wheel"
