@@ -261,5 +261,7 @@ in
 
   programs.kitty.enable = true;
 
-  imports = [ inputs.noctalia.homeModules.default ];
+  imports = [
+    inputs.noctalia.homeModules.default
+  ];
 }

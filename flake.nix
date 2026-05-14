@@ -18,6 +18,10 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/quickshell/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     stylix = {
       url = "github:danth/stylix/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,7 +36,7 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-flatpak, nix-cachyos-kernel, noctalia, stylix, awww, alejandra, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, nix-flatpak, nix-cachyos-kernel, noctalia, quickshell, stylix, awww, alejandra, ... }@inputs: {
     nixosConfigurations.thinkbook-16p = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = { inherit inputs; };
@@ -43,6 +47,9 @@
         {
           nixpkgs.overlays = [
             nix-cachyos-kernel.overlays.default
+            (final: prev: {
+              quickshell = quickshell.packages.${prev.system}.default;
+            })
           ];
           home-manager.extraSpecialArgs = { inherit inputs; };
         }
