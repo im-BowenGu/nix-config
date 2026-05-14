@@ -310,8 +310,7 @@ in
 
         bind = [
           # ============= LAUNCHER =============
-          "$mainMod, D, exec, fuzzel"
-          "$mainMod SHIFT, Return, exec, fuzzel"
+          "$mainMod CONTROL, Return, exec, fuzzel"
           # ============= TERMINALS =============
           "$mainMod, Return, exec, kitty"
           "$mainMod SHIFT, T, exec, kitty --class dropdown"
@@ -324,7 +323,7 @@ in
           "$mainMod, P, pseudo"
           "$mainMod SHIFT, I, layoutmsg, togglesplit"
           "$mainMod, F, fullscreen, 0"
-          "$mainMod SHIFT, F, togglefloating"
+          "$mainMod, T, togglefloating"
           "$mainMod SHIFT, C, exit"
           # ============= LAYOUTS =============
           "$mainMod ALT, L, exec, hyprland-change-layout toggle"
