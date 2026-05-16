@@ -13,6 +13,8 @@ in {
     pkgs.quickshell
   ];
 
+  home.file."Pictures/Wallpapers/wallpaper.png".source = ../../wallpapers/wallpaper.png;
+
   home.activation.seedNoctaliaShellCode = lib.hm.dag.entryAfter ["writeBoundary"] ''
     set -eu
     DEST="$HOME/.config/quickshell/noctalia-shell"

@@ -1,3 +1,5 @@
+{ pkgs, ... }:
+
 {
   security.doas.enable = true;
   security.doas.extraRules = [{

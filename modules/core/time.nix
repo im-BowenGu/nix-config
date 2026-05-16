@@ -1,8 +1,7 @@
-{...}: {
-  networking = {
-    hostName = "thinkbook-16p";
-    networkmanager.enable = true;
-  };
+{ ... }:
+
+{
+  time.timeZone = "Europe/London";
 
   i18n = {
     defaultLocale = "en_GB.UTF-8";
@@ -18,10 +17,4 @@
       LC_TIME = "en_GB.UTF-8";
     };
   };
-
-  time.timeZone = "Europe/London";
-
-  environment.systemPackages = with pkgs; [
-    networkmanagerapplet
-  ];
 }

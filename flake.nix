@@ -36,24 +36,37 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-flatpak, nix-cachyos-kernel, noctalia, quickshell, stylix, awww, alejandra, ... }@inputs: {
-    nixosConfigurations.thinkbook-16p = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      specialArgs = { inherit inputs; };
-      modules = [
-        nix-flatpak.nixosModules.nix-flatpak
-        ./profiles/nvidia-intel-hybrid
-        home-manager.nixosModules.home-manager
-        {
-          nixpkgs.overlays = [
-            nix-cachyos-kernel.overlays.default
-            (final: prev: {
-              quickshell = quickshell.packages.${prev.system}.default;
-            })
-          ];
-          home-manager.extraSpecialArgs = { inherit inputs; };
-        }
-      ];
+  outputs = { self, nixpkgs, home-manager, nix-flatpak, nix-cachyos-kernel, noctalia, quickshell, stylix, awww, alejandra, ... }@inputs: let
+    system = "x86_64-linux";
+    host = "thinkbook-16p";
+    profile = "nvidia-intel-hybrid";
+
+    mkNixosConfig = gpuProfile:
+      nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = {
+          inherit inputs;
+          inherit host;
+          inherit profile;
+        };
+        modules = [
+          ./profiles/${gpuProfile}
+          nix-flatpak.nixosModules.nix-flatpak
+          home-manager.nixosModules.home-manager
+          {
+            nixpkgs.overlays = [
+              nix-cachyos-kernel.overlays.default
+              (final: prev: {
+                quickshell = quickshell.packages.${prev.stdenv.hostPlatform.system}.default;
+              })
+            ];
+            home-manager.extraSpecialArgs = { inherit inputs; };
+          }
+        ];
+      };
+  in {
+    nixosConfigurations = {
+      thinkbook-16p = mkNixosConfig "nvidia-intel-hybrid";
     };
 
     formatter.x86_64-linux = inputs.alejandra.packages.x86_64-linux.default;

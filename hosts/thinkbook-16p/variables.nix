@@ -16,7 +16,7 @@
 
   extraMonitorSettings = "monitor = eDP-1, 3200x2000@165, 0x0, 2";
 
-  stylixImage = ../wallpapers/wallpaper.png;
+  stylixImage = ../../wallpapers/wallpaper.png;
 
   enableNFS = false;
   printEnable = false;

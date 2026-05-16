@@ -1,18 +1,29 @@
 { pkgs, lib, config, ... }:
 
 {
-  services.displayManager.sddm = {
+  services.greetd = {
     enable = true;
-    wayland.enable = true;
-    autoNumlock = true;
+    settings = {
+      initial_session = {
+        user = "secret-star";
+        command = "${pkgs.hyprland}/bin/start-hyprland";
+      };
+      default_session = {
+        user = "secret-star";
+        command = "${pkgs.hyprland}/bin/start-hyprland";
+      };
+    };
   };
 
-  services.displayManager.genericEnvironment = {
+  environment.sessionVariables = {
     XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
   };
 
-  home.sessionVariables = {
-    XDG_DATA_DIRS = "${config.home.homeDirectory}/.local/share/flatpak/exports/share:/var/lib/flatpak/exports/share:/usr/local/share:/usr/share";
-  };
+  environment.sessionVariables.XDG_DATA_DIRS = lib.mkForce [
+    "/home/secret-star/.local/share/flatpak/exports/share"
+    "/var/lib/flatpak/exports/share"
+    "/usr/local/share"
+    "/usr/share"
+  ];
 }

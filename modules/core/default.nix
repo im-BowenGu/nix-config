@@ -1,15 +1,26 @@
-{...}: {
+{
+  inputs,
+  host,
+  ...
+}: let
+  vars = import ../../hosts/${host}/variables.nix;
+in {
   imports = [
-    ./boot.nix
-    ./network.nix
-    ./system.nix
-    ./user.nix
-    ./security.nix
-    ./bluetooth.nix
-    ./flatpak.nix
-    ./waydroid.nix
+    ./ai.nix
     ./audio.nix
+    ./bluetooth.nix
+    ./boot.nix
     ./desktop.nix
+    ./flatpak.nix
+    ./fonts.nix
+    ./networking.nix
+    ./packages.nix
+    ./security.nix
     ./services.nix
+    ./stylix.nix
+    ./time.nix
+    ./users.nix
+    ./waydroid.nix
+    inputs.stylix.nixosModules.stylix
   ];
 }

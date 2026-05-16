@@ -1,6 +1,6 @@
 {...}: {
   imports = [
-    ./nvidia-prime-drivers.nix
-    ./intel-drivers.nix
+    ./nvidia-prime.nix
+    ./intel.nix
   ];
 }
