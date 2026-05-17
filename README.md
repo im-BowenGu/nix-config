@@ -29,7 +29,7 @@ Personal NixOS flake configuration for my ThinkBook 16p laptop with Hyprland.
 ```bash
 sudo nixos-rebuild switch --flake .#thinkbook-16p
 ```
-
+Note: thinkbook-16p is my config, you can build your own in hosts/
 ## License
 
 AGPL-3.0
