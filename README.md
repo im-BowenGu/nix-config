@@ -6,7 +6,7 @@ Personal NixOS flake configuration for my ThinkBook 16p laptop with Hyprland.
 
 - **Hyprland** - Wayland compositor
 - **Noctalia Shell** - Status bar
-- **NVIDIA + Intel PRIME** - Hybrid GPU setup
+- **NVIDIA prime + Intel** - Hybrid GPU setup
 - **CachyOS Kernel** - Optimized kernel
 - **Stylix** - Automatic theming from wallpaper
 
