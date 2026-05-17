@@ -180,6 +180,10 @@ in {
   };
 
   networking.firewall.checkReversePath = "loose";
+  networking.firewall = {
+    enable = true;
+    trustedInterfaces = [ "waydroid0" ];
+  };
   networking.enableIPv6 = false;
 
   programs.nix-ld = {

@@ -1,6 +1,27 @@
-[%General]
-author=elkrien based on Arc Dark style
-comment=Catppuccin-Mocha-Lavender
+import yaml
+import sys
+import os
+
+with open(sys.argv[1]) as f:
+    scheme = yaml.safe_load(f)
+
+if "colors" in scheme:
+    raw_colors = scheme["colors"]
+else:
+    raw_colors = scheme["palette"]
+
+def hex(c):
+    return c.lstrip("#")
+
+colors = {k: hex(v) for k, v in raw_colors.items()}
+out = sys.argv[2]
+name = sys.argv[3] if len(sys.argv) > 3 else "base16-kvantum"
+
+os.makedirs(out, exist_ok=True)
+
+KVCONFIG = f"""[%General]
+author=base16-kvantum
+comment={name}
 combo_focus_rect=true
 spread_menuitems=true
 left_tabs=true
@@ -72,25 +93,25 @@ shadowless_popup=false
 transient_groove=false
 
 [GeneralColors]
-window.color=#1E1E2E
-base.color=#181825
-alt.base.color=#181825
-button.color=#313244
-light.color=#45475A
-mid.light.color=#45475A
-dark.color=#181825
-mid.color=#181825
-highlight.color=#B4BEFE4D
-inactive.highlight.color=#45475A
-tooltip.base.color=#181825
-text.color=#CDD6F4
-window.text.color=#CDD6F4
-button.text.color=#CDD6F4
-disabled.text.color=#585B70
-tooltip.text.color=#CDD6F4
-highlight.text.color=#CDD6F4
-link.color=#B4BEFE
-link.visited.color=#B9C3FC
+window.color={colors["base00"]}
+base.color={colors["base01"]}
+alt.base.color={colors["base01"]}
+button.color={colors["base02"]}
+light.color={colors["base03"]}
+mid.light.color={colors["base03"]}
+dark.color={colors["base00"]}
+mid.color={colors["base00"]}
+highlight.color={colors["base05"]}4D
+inactive.highlight.color={colors["base02"]}
+tooltip.base.color={colors["base01"]}
+text.color={colors["base05"]}
+window.text.color={colors["base05"]}
+button.text.color={colors["base05"]}
+disabled.text.color={colors["base04"]}
+tooltip.text.color={colors["base05"]}
+highlight.text.color={colors["base07"]}
+link.color={colors["base0D"]}
+link.visited.color={colors["base0E"]}
 
 [ItemView]
 inherits=PanelButtonCommand
@@ -99,8 +120,8 @@ interior.element=itemview
 frame=true
 interior=true
 text.iconspacing=3
-text.press.color=#CDD6F4
-text.toggle.color=#CDD6F4
+text.press.color={colors["base05"]}
+text.toggle.color={colors["base05"]}
 
 [RadioButton]
 inherits=PanelButtonCommand
@@ -127,10 +148,10 @@ frame=true
 inherits=PanelButtonCommand
 interior.element=button
 frame.element=button
-text.normal.color=#CDD6F4
-text.focus.color=#CDD6F4
-text.press.color=#CDD6F4
-text.toggle.color=#CDD6F4
+text.normal.color={colors["base05"]}
+text.focus.color={colors["base05"]}
+text.press.color={colors["base05"]}
+text.toggle.color={colors["base05"]}
 
 [PanelButtonTool]
 inherits=PanelButtonCommand
@@ -232,10 +253,10 @@ frame.bottom=3
 frame.left=3
 frame.right=3
 indicator.size=10
-text.normal.color=#9399B2
-text.focus.color=#CDD6F4
-text.press.color=#CDD6F4
-text.toggle.color=#CDD6F4
+text.normal.color={colors["base04"]}
+text.focus.color={colors["base05"]}
+text.press.color={colors["base05"]}
+text.toggle.color={colors["base05"]}
 focusFrame=true
 
 [TabBarFrame]
@@ -272,10 +293,10 @@ frame.bottom=1
 frame.left=1
 frame.right=1
 frame.expansion=0
-text.normal.color=#CDD6F4
-text.focus.color=#B4BEFE
-text.press.color=#CDD6F4
-text.toggle.color=#CDD6F4
+text.normal.color={colors["base05"]}
+text.focus.color={colors["base0D"]}
+text.press.color={colors["base05"]}
+text.toggle.color={colors["base05"]}
 indicator.element=harrow
 
 [SizeGrip]
@@ -293,10 +314,10 @@ frame=true
 frame.bottom=4
 frame.left=4
 frame.right=4
-text.normal.color=#CDD6F4
-text.focus.color=#CDD6F4
-text.press.color=#B4BEFE
-text.toggle.color=#B4BEFE
+text.normal.color={colors["base05"]}
+text.focus.color={colors["base05"]}
+text.press.color={colors["base0D"]}
+text.toggle.color={colors["base0D"]}
 text.bold=false
 
 [MenuBar]
@@ -304,7 +325,7 @@ inherits=PanelButtonCommand
 frame.element=menubar
 interior.element=menubar
 frame.bottom=0
-text.normal.color=#CDD6F4
+text.normal.color={colors["base05"]}
 frame.expansion=0
 text.bold=false
 
@@ -312,10 +333,10 @@ text.bold=false
 frame.element=tbutton
 interior.element=tbutton
 indicator.element=arrow
-text.normal.color=#CDD6F4
-text.focus.color=#CDD6F4
-text.press.color=#CDD6F4
-text.toggle.color=#CDD6F4
+text.normal.color={colors["base05"]}
+text.focus.color={colors["base05"]}
+text.press.color={colors["base05"]}
+text.toggle.color={colors["base05"]}
 text.bold=false
 
 [ToolbarLineEdit]
@@ -361,10 +382,10 @@ frame.bottom=2
 frame.left=2
 frame.right=2
 text.margin=0
-text.normal.color=#CDD6F4
-text.focus.color=#CDD6F4
-text.press.color=#181825
-text.toggle.color=#181825
+text.normal.color={colors["base05"]}
+text.focus.color={colors["base05"]}
+text.press.color={colors["base00"]}
+text.toggle.color={colors["base00"]}
 text.bold=false
 frame.expansion=18
 
@@ -375,8 +396,8 @@ inherits=PanelButtonCommand
 frame.element=menu
 interior.element=menu
 inherits=PanelButtonCommand
-text.press.color=#181825
-text.toggle.color=#181825
+text.press.color={colors["base00"]}
+text.toggle.color={colors["base00"]}
 text.bold=false
 frame.top=3
 frame.bottom=3
@@ -391,8 +412,8 @@ frame=true
 frame.element=menuitem
 frame.right=10
 frame.left=10
-text.focus.color=#CDD6F4
-text.press.color=#CDD6F4
+text.focus.color={colors["base05"]}
+text.press.color={colors["base05"]}
 
 [MenuBarItem]
 inherits=PanelButtonCommand
@@ -407,7 +428,7 @@ text.margin.right=5
 inherits=Toolbar
 frame.element=toolbar
 font.bold=true
-text.normal.color=#CDD6F4
+text.normal.color={colors["base05"]}
 frame=true
 frame.top=0
 frame.bottom=0
@@ -432,14 +453,14 @@ text.margin.top=1
 text.margin.bottom=1
 text.margin.left=3
 text.margin.right=3
-text.press.color=#CDD6F4
-text.toggle.color=#CDD6F4
+text.press.color={colors["base05"]}
+text.toggle.color={colors["base05"]}
 
 [ToolboxTab]
 inherits=PanelButtonCommand
-text.normal.color=#CDD6F4
-text.press.color=#CDD6F4
-text.focus.color=#CDD6F4
+text.normal.color={colors["base05"]}
+text.press.color={colors["base05"]}
+text.focus.color={colors["base05"]}
 
 [Hacks]
 transparent_dolphin_view=false
@@ -474,3 +495,19 @@ frame.top=0
 frame.bottom=0
 frame.left=0
 frame.right=0
+"""
+
+with open(os.path.join(out, f"{name}.kvconfig"), "w") as f:
+    f.write(KVCONFIG)
+
+with open(os.path.join(out, f"{name}.svg"), "w") as f:
+    f.write(f"""<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <rect width="16" height="16" rx="2" fill="{colors['base00']}"/>
+  <rect x="2" y="2" width="12" height="3" rx="1" fill="{colors['base0D']}"/>
+  <rect x="2" y="7" width="8" height="2" rx="1" fill="{colors['base05']}"/>
+  <rect x="2" y="11" width="6" height="2" rx="1" fill="{colors['base04']}"/>
+</svg>
+""")
+
+print(f"Generated Kvantum theme '{name}'")

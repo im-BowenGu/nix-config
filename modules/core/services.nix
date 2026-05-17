@@ -19,6 +19,7 @@
     XDG_SESSION_TYPE = "wayland";
     XDG_CURRENT_DESKTOP = "Hyprland";
   };
+  services.fwupd.enable = true;
 
   environment.sessionVariables.XDG_DATA_DIRS = lib.mkForce [
     "/home/secret-star/.local/share/flatpak/exports/share"

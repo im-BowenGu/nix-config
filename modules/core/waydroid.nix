@@ -14,7 +14,10 @@
   networking.nat.externalInterface = config.networking.defaultGateway.interface or "wlan0";
 
   networking.nftables.enable = true;
-
+  systemd.services.waydroid-container.serviceConfig.DeviceDeny = [
+    "/dev/dri/card1 rwm"
+    "/dev/dri/renderD129 rwm"
+  ];
   systemd.services.waydroid-container = {
     enable = true;
     description = "Waydroid Container";

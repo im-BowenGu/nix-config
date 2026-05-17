@@ -8,10 +8,11 @@
     kernelPackages = pkgs.cachyosKernels.linuxPackages-cachyos-latest-lto;
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
-    plymouth = {
+    plymouth.nixos-loading = {
       enable = true;
-      theme = lib.mkForce "spinner";
+      variant = "default"; # "default", "rainbow", or "white"
     };
+    plymouth.theme = lib.mkForce "nixos-loading-default";
     kernelParams = [
       "quiet" "splash"
       "systemd.show_status=false"

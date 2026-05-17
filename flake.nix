@@ -18,6 +18,10 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-loading-plymouth = {
+      url = "github:qboileau/nixos-load-plymouth";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     quickshell = {
       url = "git+https://git.outfoxxed.me/quickshell/quickshell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,9 +38,13 @@
       url = "github:kamadorueda/alejandra";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    lazyvim-nix = {
+      url = "github:pfassina/lazyvim-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-flatpak, nix-cachyos-kernel, noctalia, quickshell, stylix, awww, alejandra, ... }@inputs: let
+  outputs = { self, nixpkgs, home-manager, nix-flatpak, nix-cachyos-kernel, nixos-loading-plymouth, noctalia, quickshell, stylix, awww, alejandra, lazyvim-nix, ... }@inputs: let
     system = "x86_64-linux";
     host = "thinkbook-16p";
     profile = "nvidia-intel-hybrid";
@@ -52,6 +60,7 @@
         modules = [
           ./profiles/${gpuProfile}
           nix-flatpak.nixosModules.nix-flatpak
+          nixos-loading-plymouth.nixosModules.default
           home-manager.nixosModules.home-manager
           {
             nixpkgs.overlays = [

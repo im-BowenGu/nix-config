@@ -1,4 +1,40 @@
-{ lib, ... }: {
+{ lib, pkgs, ... }:
+  let
+  compactWorkspaces = pkgs.writeShellScriptBin "compact-workspaces" ''
+    initial_focused=$(${pkgs.hyprland}/bin/hyprctl activeworkspace -j | ${pkgs.jq}/bin/jq -r '.id')
+    new_focused=$initial_focused
+
+    workspaces=$(${pkgs.hyprland}/bin/hyprctl workspaces -j | ${pkgs.jq}/bin/jq '.[] | .id' | sort -n | grep -v '^-')
+    expected=1
+
+    for ws in $workspaces; do
+        if [ "$ws" -gt "$expected" ]; then
+            windows=$(${pkgs.hyprland}/bin/hyprctl clients -j | ${pkgs.jq}/bin/jq -r ".[] | select(.workspace.id == $ws) | .address")
+            
+            for win in $windows; do
+                ${pkgs.hyprland}/bin/hyprctl dispatch movetoworkspacesilent "$expected,address:$win"
+            done
+            
+            if [ "$ws" -eq "$initial_focused" ]; then
+                new_focused=$expected
+            fi
+            
+            expected=$((expected + 1))
+        else
+            expected=$((ws + 1))
+        fi
+    done
+
+    if [ "$initial_focused" -ne "$new_focused" ]; then
+        ${pkgs.hyprland}/bin/hyprctl dispatch workspace "$new_focused"
+    fi
+  '';
+  in
+  {
+  home.packages = [ 
+    compactWorkspaces
+    pkgs.jq 
+  ];
   wayland.windowManager.hyprland = {
     enable = true;
     configType = "hyprlang";
@@ -14,7 +50,8 @@
       exec-once = [
         "nm-applet"
         "noctalia-shell"
-        "hyprlock"
+        "hyprlock && pw-play /home/secret-star/.config/sound.wav"
+	"socat - UNIX-CONNECT:\$XDG_RUNTIME_DIR/hypr/\$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | grep --line-buffered 'unlockactive' | while read -r line; do pw-play /home/secret-star/.config/sound.wav & done"
       ];
 
       env = [
@@ -113,9 +150,11 @@
       };
 
       bind = [
+        "$mainMod SHIFT, C, exec, compact-workspaces"
         "SUPER, Q, killactive,"
         "CTRL SUPER, Q, exec, wlogout"
         "SUPER, Return, exec, $terminal"
+	"SUPER, L, exec, hyprlock && pw-play /home/secret-star/.config/sound.wav"
         "SUPER, B, exec, $browser"
         "SUPER, E, exec, $fileManager"
         "SUPER, T, togglefloating,"
