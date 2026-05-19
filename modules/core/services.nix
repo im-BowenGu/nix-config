@@ -46,4 +46,39 @@
       '';
     };
   };
+
+  systemd.tmpfiles.settings."tuptime" = {
+    "/var/lib/tuptime".d = {
+      user = "root";
+      group = "root";
+      mode = "0755";
+    };
+  };
+
+  systemd.services.tuptime-graceful = {
+    description = "Mark tuptime shutdown as graceful";
+    before = [ "shutdown.target" ];
+    wantedBy = [ "shutdown.target" ];
+    conflicts = [ "shutdown.target" ];
+    unitConfig.DefaultDependencies = false;
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.coreutils}/bin/true";
+      ExecStop = "${pkgs.tuptime}/bin/tuptime -gq";
+    };
+  };
+
+  systemd.services.battery-conserve = {
+    description = "Enable Lenovo battery conservation mode (cap at ~60%)";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "sysinit.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      echo 1 > /sys/devices/pci0000:00/0000:00:1f.0/PNP0C09:00/VPC2004:00/conservation_mode
+    '';
+  };
 }

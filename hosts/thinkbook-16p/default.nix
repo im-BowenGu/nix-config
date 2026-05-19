@@ -98,7 +98,6 @@ in {
     gparted
     cryptsetup
     neovim
-    fastfetch
     doas-sudo-shim
     kitty
     arch-install-scripts
