@@ -1,0 +1,71 @@
+diff --git a/fs/proc/uptime.c b/fs/proc/uptime.c
+--- a/fs/proc/uptime.c
++++ b/fs/proc/uptime.c
+@@ -4,14 +4,49 @@
+ #include <linux/sched.h>
+ #include <linux/seq_file.h>
+ #include <linux/time.h>
++#include <linux/fs.h>
++#include <linux/file.h>
++#include <linux/uaccess.h>
++#include <linux/string.h>
++
++/* Simple kernel-space helper to read our persistent uptime offset */
++static unsigned long get_kexec_uptime_offset(void)
++{
++	struct file *filp;
++	loff_t pos = 0;
++	char buf[32];
++	ssize_t res;
++	unsigned long offset = 0;
++
++	/* Ensure we only apply this if the user booted via our kexec script */
++	if (!saved_command_line || !strstr(saved_command_line, "woke_from_kexec=1"))
++		return 0;
++
++	filp = filp_open("/var/lib/kexec_base_uptime", O_RDONLY, 0);
++	if (IS_ERR(filp))
++		return 0;
++
++	memset(buf, 0, sizeof(buf));
++	res = kernel_read(filp, buf, sizeof(buf) - 1, &pos);
++	fput(filp);
++
++	if (res > 0) {
++		/* Strip any trailing newline or decimals for simple parsing */
++		char *end = strchr(buf, '\n');
++		if (end) *end = '\0';
++		end = strchr(buf, '.');
++		if (end) *end = '\0';
++		
++		if (kstrtoul(buf, 10, &offset) != 0)
++			return 0;
++	}
++	return offset;
++}
+ 
+ static int uptime_proc_show(struct seq_file *m, void *v)
+ {
+ 	struct timespec64 uptime;
+ 	struct timespec64 idle;
+-	u64 nsec;
+-	u64 idle_nsec;
+-	u64 rem;
+ 
+ 	ktime_get_boottime_ts64(&uptime);
+ 	
+@@ -23,8 +58,11 @@ static int uptime_proc_show(struct seq_file *m, void *v)
+ 	#else
+ 	idle.tv_sec = idle.tv_nsec = 0;
+ 	#endif
++	
++	/* Inject our cumulative kexec offset cleanly into the seconds field */
++	unsigned long offset = get_kexec_uptime_offset();
+ 
+-	seq_printf(m, "%lu.%02lu %lu.%02lu\n",
+-		(unsigned long)uptime.tv_sec,
++	seq_printf(m, "%lu.%02lu %lu.%02lu\n",
++		(unsigned long)(uptime.tv_sec + offset),
+ 		(unsigned long)(uptime.tv_nsec / (NSEC_PER_SEC / 100)),
+ 		(unsigned long)idle.tv_sec,
+ 		(unsigned long)(idle.tv_nsec / (NSEC_PER_SEC / 100)));
