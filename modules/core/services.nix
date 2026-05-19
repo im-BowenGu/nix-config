@@ -30,12 +30,18 @@
   virtualisation.libvirtd.enable = true;
   networking.firewall.checkReversePath = "loose";
   networking.firewall.trustedInterfaces = [ "virbr0" ];
+  networking.firewall.allowedTCPPorts = [ 443 ];
 
   services.caddy = {
     enable = true;
     virtualHosts."10.160.3.104" = {
       extraConfig = ''
-        reverse_proxy localhost:7443
+        bind 0.0.0.0
+        reverse_proxy https://localhost:7443 {
+          transport http {
+            tls_insecure_skip_verify
+          }
+        }
         tls internal
       '';
     };
