@@ -13,6 +13,7 @@ in {
     ./desktop.nix
     ./flatpak.nix
     ./fonts.nix
+    ./gatwy.nix
     ./networking.nix
     ./packages.nix
     ./security.nix
