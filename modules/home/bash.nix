@@ -6,15 +6,13 @@
     shellAliases = {
       ls = "eza --icons=auto";
       grep = "rg";
-      sudo = "doas";
-
       cat = "bat --style=plain";
-      find = "fd";
       df = "duf";
       du = "dust";
       ps = "procs";
-
       cd = "z";
+      rebuild = "sudo nixos-rebuild switch --flake /etc/nixos\\#thinkbook-16p";
+
     };
     initExtra = ''
       eval "$(oh-my-posh init bash --config ~/.config/oh-my-posh/night-owl.omp.json)"

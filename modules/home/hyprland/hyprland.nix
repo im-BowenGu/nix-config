@@ -45,13 +45,14 @@
       "$menu" = "fuzzel";
       "$mainMod" = "SUPER";
 
-      monitor = ",preferred,auto,auto";
+      monitor = "eDP-1, 3200x2000@165, auto, 2";
 
       exec-once = [
         "nm-applet"
         "noctalia-shell"
         "hyprlock && pw-play /home/secret-star/.config/sound.wav"
 	"socat - UNIX-CONNECT:\$XDG_RUNTIME_DIR/hypr/\$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock | grep --line-buffered 'unlockactive' | while read -r line; do pw-play /home/secret-star/.config/sound.wav & done"
+	"hyprpolkitagent"
       ];
 
       env = [

@@ -39,6 +39,7 @@ in {
     playerctl
     kitty
     obsidian
+    wlogout
     (python3.withPackages (ps: with ps; [ pip pygobject3 screeninfo ]))
     inputs.awww.packages.${pkgs.stdenv.hostPlatform.system}.awww
     hmcl-desktop

@@ -1,6 +1,6 @@
 { pkgs, ... }: {
   imports = [
-    ./env.nix
+    ./hyprland.nix
     ./hypridle.nix
     ./hyprlock.nix
   ];

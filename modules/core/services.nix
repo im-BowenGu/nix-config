@@ -27,4 +27,7 @@
     "/usr/local/share"
     "/usr/share"
   ];
+  virtualisation.libvirtd.enable = true;
+  networking.firewall.checkReversePath = "loose";
+  networking.firewall.trustedInterfaces = [ "virbr0" ];
 }

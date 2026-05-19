@@ -164,4 +164,5 @@
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 }
